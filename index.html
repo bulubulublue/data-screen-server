@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="msg"></div>
+    <input type="text" id="text" />
+    <input type="button" id="submitBtn" value="send" />
+
+    <script>
+      // 连接的建立是个异步过程
+      var websocket = new WebSocket('ws://127.0.0.1:8080')
+
+      /*
+        readyState: ws的状态
+        0: new的时候, 连接还没建立
+        1: 链接建立成功
+        2：链接正在关闭
+        3：链接已经关闭
+      */
+      websocket.onopen = function () {
+        console.log('连接成功', websocket.readyState)
+      }
+
+      websocket.onerror = function (err) {
+        console.log('连接失败', websocket.readyState, err)
+      }
+
+      // 接收服务器推送给客户端的数据
+      websocket.onmessage = function (backData) {
+        console.log(backData) //MessageEvent {isTrusted: true, data: '[object Object]', origin: 'ws://127.0.0.1:8080', lastEventId: '', source: null, …}
+        console.log(backData.data)
+      }
+
+      const btn = document.getElementById('submitBtn')
+
+      function send() {
+        var text = document.getElementById('text').value
+        //给服务器发送消息,传递对象需要使用JSON.stringify
+        websocket.send(
+          JSON.stringify({
+            functionName: 'test',
+          })
+        )
+      }
+
+      btn.addEventListener('click', send)
+    </script>
+  </body>
+</html>
